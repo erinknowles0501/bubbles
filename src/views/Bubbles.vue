@@ -19,20 +19,26 @@ export default {
   },
   data() {
     return {
-      loaded: false
+      loaded: false,
+      bubbles: []
     };
   },
-  computed: {
-    bubbles: {
-      get() {
-        console.log(getters.bubbles());
-        return getters.bubbles();
-      },
-      set() {}
-    }
-  },
+  // not dang workin
+  // computed: {
+  //   bubbles: {
+  //     get() {
+  //       console.log(getters.bubbles());
+  //       return getters.bubbles();
+  //     },
+  //     set() {
+  //       return getters.bubbles();
+  //     }
+  //   }
+  // },
   async created() {
     await getPosts();
+    this.bubbles = getters.bubbles();
+    console.log("this bubbles!", this.bubbles);
     this.loaded = true;
   }
 };

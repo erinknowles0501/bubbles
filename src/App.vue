@@ -40,7 +40,8 @@ export default {
 
 <style>
 html,
-body {
+body,
+.theme--light.v-application {
   height: 100%;
   background: #cfdbd8 !important;
   color: white !important;
@@ -71,8 +72,4 @@ button.add:hover {
 ul {
   list-style: none;
 }
-/* 
-.v-label {
-  color: white !important;
-} */
 </style>

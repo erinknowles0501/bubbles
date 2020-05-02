@@ -19,6 +19,7 @@
         dark
         rows="1"
         @keydown.enter.prevent
+        counter="36"
       ></v-textarea>
 
       <v-textarea
