@@ -56,21 +56,31 @@ export default {
       }
     }
   },
-  created() {
-    db.collection("replies")
+  async created() {
+    await db
+      .collection("replies")
       .where("parentUid", "==", this.bubble.id)
       .get()
       .then(snapshot => {
-        console.log(snapshot);
-        snapshot
-          .forEach(doc => {
-            let tempReply = doc.data();
-            tempReply.id = doc.id;
-            this.replies.push(tempReply);
-          })
-          .catch(error => console.log("Error!", error));
-        console.log(replies);
-      });
+        snapshot.forEach(doc => {
+          let tempReply = doc.data();
+          tempReply.id = doc.id;
+          this.replies.push(tempReply);
+        });
+      })
+      .catch(error => console.log("Error!", error));
+    console.log("bubble returned replies: ", this.replies);
+    // await db
+    //   .collection("replies")
+    //   .where("parentUid", "==", this.bubble.id)
+    //   .get()
+    //   .then(snapshot => {
+    //     snapshot.forEach(doc => {
+    //       let tempReply = doc.data();
+    //       tempReply.id = doc.id;
+    //       this.replies.push(tempReply);
+    //     });
+    //   });
 
     this.loaded = true;
   },
