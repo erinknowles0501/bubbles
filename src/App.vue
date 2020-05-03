@@ -1,13 +1,53 @@
 <template>
   <v-app>
     <v-content>
-      <button
-        class="add"
-        @click="viewing ? $router.push({ name: 'home' }) : (create = !create)"
-        :style="create && 'transform: rotate(45deg)'"
+      <v-btn
+        absolute
+        top
+        left
+        color="main"
+        dark
+        @click="$router.push({ name: 'home' })"
+        >Bubbles</v-btn
       >
-        {{ viewing ? "<" : "+" }}
-      </button>
+      <div class="actions">
+        <v-btn
+          dark
+          x-large
+          icon
+          fab
+          depressed
+          color="main"
+          @click="$router.push({ name: 'myAccount' })"
+        >
+          <v-icon>mdi-account-circle</v-icon>
+        </v-btn>
+
+        <v-btn
+          v-if="!viewing"
+          class="add"
+          fab
+          :color="create ? 'white' : 'main'"
+          depressed
+          dark
+          x-large
+          icon
+          @click="create = !create"
+          :style="create && 'transform: rotate(45deg)'"
+          ><v-icon>mdi-plus</v-icon></v-btn
+        >
+        <v-btn
+          v-if="viewing"
+          @click="$router.push({ name: 'home' })"
+          fab
+          color="white"
+          depressed
+          dark
+          x-large
+          icon
+          ><v-icon>mdi-arrow-left</v-icon></v-btn
+        >
+      </div>
 
       <Create v-model="create" />
 
@@ -19,15 +59,19 @@
 <script>
 import db from "@/firebase/init";
 import Create from "./components/Create";
+import User from "./components/User";
+// import { mdiPlus } from "@mdi/js";
 
 export default {
   name: "App",
   components: {
-    Create: Create
+    Create: Create,
+    User: User
   },
   data() {
     return {
-      create: false
+      create: false,
+      user: false
     };
   },
   computed: {
@@ -47,25 +91,29 @@ body,
   color: white !important;
 }
 
-button.add {
+.actions {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 100;
+  padding: 20px;
+}
+
+/* .actions button.add {
   background: blue;
+  transition: all 0.2s;
   color: white;
   font-size: 30px;
   line-height: 30px;
   padding: 10px;
   margin: 20px;
   border: 0;
-  position: fixed;
   height: 50px;
   width: 50px;
   border-radius: 50%;
-  top: 0;
-  right: 0;
-  transition: all 0.2s;
-  z-index: 100;
-}
+} */
 
-button.add:hover {
+.actions button:hover {
   transform: scale(1.1);
 }
 

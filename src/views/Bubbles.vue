@@ -1,6 +1,5 @@
 <template>
   <ul v-if="loaded">
-    hello
     <li v-for="bubble in bubbles" :key="bubble.id">
       <Bubble :bubble="bubble" />
     </li>
