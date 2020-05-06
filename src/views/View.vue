@@ -1,5 +1,6 @@
 <template>
   <div class="bubble-wrap">
+    <div class="bubble-bg"></div>
     <v-container>
       <h1>{{ bubble.question }}</h1>
       <p class="description">{{ bubble.description }}</p>
@@ -117,15 +118,22 @@ export default {
 
 <style scoped>
 .bubble-wrap {
-  background: blue;
-  position: absolute;
-  top: 30px;
-  bottom: 30px;
-  right: 30px;
-  left: 30px;
+  position: relative;
   z-index: 50;
   color: white;
   padding: 50px;
+  padding-top: 100px;
+}
+
+.bubble-bg {
+  background: blue;
+  position: fixed;
+  top: 60px;
+  bottom: -500px;
+  right: -500px;
+  left: -500px;
+  border-radius: 50%;
+  z-index: -50;
 }
 
 .container {

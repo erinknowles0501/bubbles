@@ -2,7 +2,7 @@
   <v-app>
     <v-content>
       <v-btn
-        absolute
+        fixed
         top
         left
         color="main"
@@ -40,7 +40,7 @@
           v-if="viewing"
           @click="$router.push({ name: 'home' })"
           fab
-          color="white"
+          color="main"
           depressed
           dark
           x-large
