@@ -58,6 +58,7 @@
 
 <script>
 import db from "@/firebase/init";
+import firebase from "firebase";
 import Create from "./components/Create";
 import User from "./components/User";
 // import { mdiPlus } from "@mdi/js";
@@ -78,6 +79,16 @@ export default {
     viewing() {
       return this.$route.params.uid ? true : false;
     }
+  },
+  created() {
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        console.log("user signed in!", user.uid);
+      } else {
+        // No user is signed in.
+        console.log("no user signed in :(");
+      }
+    });
   }
 };
 </script>
