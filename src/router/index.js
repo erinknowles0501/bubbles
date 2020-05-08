@@ -2,7 +2,8 @@ import Vue from "vue";
 import Router from "vue-router";
 import Bubbles from "@/views/Bubbles";
 import View from "../views/View";
-import MyAccount from "../views/MyAccount";
+import Signup from "../views/Signup";
+import User from "../views/User";
 
 Vue.use(Router);
 
@@ -19,9 +20,14 @@ export default new Router({
       component: View
     },
     {
-      path: "/user/me",
-      name: "myAccount",
-      component: MyAccount
+      path: "/signup",
+      name: "signup",
+      component: Signup
+    },
+    {
+      path: "/user/:username",
+      name: "user",
+      component: User
     }
   ]
 });

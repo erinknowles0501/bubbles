@@ -7,7 +7,17 @@
 
       <ul v-if="replies">
         <li class="reply-wrap" v-for="reply in replies" :key="reply.id">
-          <div class="meta">{{ reply.userData.username }}, posted blah</div>
+          <div class="meta">
+            {{ reply.userData.username }}, posted blah
+            <v-btn
+              icon
+              class="delete"
+              v-if="canDelete(reply.userUid)"
+              @click="deleteReply(reply.id)"
+            >
+              <v-icon color="rgba(255,255,255,0.5)">mdi-delete</v-icon>
+            </v-btn>
+          </div>
           <p class="reply">{{ reply.comment }}</p>
         </li>
       </ul>
@@ -20,6 +30,7 @@
           rows="3"
           counter="1000"
           autofocus
+          @keyup.ctrl.enter="createComment"
         ></v-textarea>
         <v-btn type="submit" depressed large>Post</v-btn>
       </v-form>
@@ -70,7 +81,7 @@ export default {
           snapshot.forEach(async doc => {
             let tempComment = doc.data();
             tempComment.id = doc.id;
-            tempComment.userData = await this.getReplyUserData(doc.data());
+            tempComment.userData = await this.getReplyUserData(doc.data()); // might take less reads to just pull in .where('username', '==', ['user1', 'user2']) and then squish the data with JS
             // push no good. need splice
             if (!this.replies.find(reply => reply.id === doc.id)) {
               this.replies.splice(this.replies.length + 1, 0, tempComment);
@@ -103,6 +114,22 @@ export default {
       this.comment = null;
 
       this.getReplies();
+    },
+    canDelete(userUid) {
+      return userUid === firebase.auth().currentUser.uid;
+    },
+    deleteReply(replyUid) {
+      db.collection("replies")
+        .doc(replyUid)
+        .delete()
+        .then(() => {
+          console.log("Document successfully deleted");
+          this.replies.splice(
+            this.replies.findIndex(reply => (reply.id = replyUid)),
+            1
+          );
+        })
+        .catch(error => console.log("Error!", error));
     }
   },
   watch: {
@@ -160,7 +187,7 @@ ul {
   margin: 50px 0;
   padding: 20px;
   font-size: 1.4em;
-  border-left: 3px solid white;
+  border-left: 4px solid rgba(255, 255, 255, 0.4);
 }
 
 .reply {
@@ -172,5 +199,18 @@ ul {
   font-style: italic;
   font-family: "neuton", serif;
   color: rgba(255, 255, 255, 0.6);
+  position: relative;
+}
+
+.delete {
+  position: absolute;
+  top: 0;
+  right: 0;
+  transition: all 0.15s;
+}
+
+.delete:hover {
+  color: white;
+  scale: 1.3;
 }
 </style>

@@ -57,6 +57,7 @@ import firebase from "firebase";
 import db from "@/firebase/init";
 
 export default {
+  name: "signup",
   data() {
     return {
       valid: true,

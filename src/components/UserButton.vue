@@ -16,7 +16,7 @@
 
 <script>
 export default {
-  name: "user",
+  name: "userButton",
   data() {
     return {
       items: [

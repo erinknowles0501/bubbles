@@ -60,14 +60,14 @@
 import db from "@/firebase/init";
 import firebase from "firebase";
 import Create from "./components/Create";
-import User from "./components/User";
+import UserButton from "./components/UserButton";
 // import { mdiPlus } from "@mdi/js";
 
 export default {
   name: "App",
   components: {
     Create: Create,
-    User: User
+    UserButton: UserButton
   },
   data() {
     return {
