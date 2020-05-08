@@ -1,6 +1,6 @@
 <template>
-  <v-container
-    ><h2>Sign up</h2>
+  <v-container>
+    <h2>Sign up</h2>
     <v-form v-model="valid" @submit.prevent="signup">
       <v-text-field
         v-model="username"

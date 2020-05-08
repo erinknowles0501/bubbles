@@ -1,5 +1,6 @@
 <template>
   <div
+    class="bubble"
     v-if="loaded"
     @click="openBubble"
     :style="
@@ -109,6 +110,11 @@ div {
   justify-content: center;
   flex-direction: column;
 }
+
+.bubble {
+  cursor: default;
+}
+
 h3 {
   font-size: 30px;
   font-family: "neuton";

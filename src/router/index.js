@@ -1,9 +1,10 @@
 import Vue from "vue";
 import Router from "vue-router";
 import Bubbles from "@/views/Bubbles";
-import View from "../views/View";
-import Signup from "../views/Signup";
-import User from "../views/User";
+import View from "@/views/View";
+import Signup from "@/views/Signup";
+import Login from "@/views/Login";
+import User from "@/views/User";
 
 Vue.use(Router);
 
@@ -23,6 +24,11 @@ export default new Router({
       path: "/signup",
       name: "signup",
       component: Signup
+    },
+    {
+      path: "/login",
+      name: "login",
+      component: Login
     },
     {
       path: "/user/:username",

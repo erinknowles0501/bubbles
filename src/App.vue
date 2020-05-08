@@ -3,22 +3,37 @@
     <v-content>
       <v-btn
         fixed
+        depressed
+        text
         top
         left
+        x-large
         color="main"
         dark
         @click="$router.push({ name: 'home' })"
         >Bubbles</v-btn
       >
       <div class="actions">
+        <v-btn v-if="!user" text depressed color="main" :to="{ name: 'signup' }"
+          >Signup</v-btn
+        >
+        <v-btn v-if="!user" text depressed color="main" :to="{ name: 'login' }"
+          >Login</v-btn
+        >
+
+        <v-btn v-if="user" text depressed color="main" @click="logout"
+          >Logout</v-btn
+        >
+
         <v-btn
+          v-if="user"
           dark
           x-large
           icon
           fab
           depressed
           color="main"
-          @click="$router.push({ name: 'myAccount' })"
+          :to="{ name: 'user', params: { username: user.username } }"
         >
           <v-icon>mdi-account-circle</v-icon>
         </v-btn>
@@ -72,7 +87,7 @@ export default {
   data() {
     return {
       create: false,
-      user: false
+      user: null
     };
   },
   computed: {
@@ -81,14 +96,42 @@ export default {
     }
   },
   created() {
-    firebase.auth().onAuthStateChanged(function(user) {
+    // firebase.auth().onAuthStateChanged(function(user) {
+    //   if (user) {
+    //     console.log("user signed in!", user.uid);
+
+    //     console.log(this.user);
+    //   } else {
+    //     // No user is signed in.
+    //     console.log("no user signed in :(");
+    //     this.user = null;
+    //   }
+    // });
+    firebase.auth().onAuthStateChanged(user => {
       if (user) {
-        console.log("user signed in!", user.uid);
+        db.collection("users")
+          .doc(user.uid)
+          .get()
+          .then(doc => (this.user = doc.data()))
+          .catch(error =>
+            console.log("Error getting user from current user uid: ", error)
+          );
+        //	this.user = firebase.auth().currentUser;
+        console.log(user);
       } else {
-        // No user is signed in.
-        console.log("no user signed in :(");
+        this.user = null;
       }
     });
+  },
+  methods: {
+    logout() {
+      firebase
+        .auth()
+        .signOut()
+        .then(() => {
+          this.$router.push({ name: "Login" });
+        });
+    }
   }
 };
 </script>

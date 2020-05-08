@@ -22,7 +22,12 @@
         </li>
       </ul>
 
-      <v-form v-model="valid" action.prevent @submit="createComment">
+      <v-form
+        v-if="user"
+        v-model="valid"
+        action.prevent
+        @submit="createComment"
+      >
         <v-textarea
           v-model="comment"
           dark
@@ -34,6 +39,8 @@
         ></v-textarea>
         <v-btn type="submit" depressed large>Post</v-btn>
       </v-form>
+
+      <p v-else>Sign up or log in to write replies</p>
     </v-container>
   </div>
 </template>
@@ -50,10 +57,13 @@ export default {
       bubble: {},
       replies: [],
       valid: false,
-      comment: null
+      comment: null,
+      user: null
     };
   },
   async created() {
+    this.user = firebase.auth().currentUser;
+
     await db
       .collection("threads")
       .doc(this.$route.params.uid)
@@ -116,7 +126,11 @@ export default {
       this.getReplies();
     },
     canDelete(userUid) {
-      return userUid === firebase.auth().currentUser.uid;
+      if (firebase.auth().currentUser) {
+        return userUid === firebase.auth().currentUser.uid;
+      } else {
+        return false;
+      }
     },
     deleteReply(replyUid) {
       db.collection("replies")
