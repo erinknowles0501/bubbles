@@ -7,14 +7,14 @@
 
       <ul v-if="replies">
         <li class="reply-wrap" v-for="reply in replies" :key="reply.id">
-          <div class="meta">
+          <div class="meta-info">
             <router-link
               :to="{
                 name: 'user',
                 params: { username: reply.userData.username }
               }"
               >{{ reply.userData.username }}</router-link
-            >, posted blah
+            >, posted {{ getTime(reply.created) }}
             <v-btn
               icon
               class="delete"
@@ -29,7 +29,7 @@
       </ul>
 
       <v-form
-        v-if="user"
+        v-if="loaded && user"
         v-model="valid"
         action.prevent
         @submit="createComment"
@@ -40,13 +40,18 @@
           auto-grow
           rows="3"
           counter="1000"
+          hint="Ctrl+Enter to post"
           autofocus
           @keyup.ctrl.enter="createComment"
         ></v-textarea>
-        <v-btn type="submit" depressed large>Post</v-btn>
+        <v-btn type="submit" depressed large light>Post</v-btn>
       </v-form>
 
-      <p v-else>Sign up or log in to write replies</p>
+      <p v-else>
+        <router-link :to="{ name: 'signup' }">Sign up</router-link> or
+        <router-link :to="{ name: 'login' }">log in</router-link> to write
+        replies
+      </p>
     </v-container>
   </div>
 </template>
@@ -54,6 +59,7 @@
 <script>
 import db from "@/firebase/init";
 import firebase from "firebase";
+import moment from "moment";
 
 export default {
   name: "view",
@@ -68,8 +74,6 @@ export default {
     };
   },
   async created() {
-    this.user = firebase.auth().currentUser;
-
     await db
       .collection("threads")
       .doc(this.$route.params.uid)
@@ -87,7 +91,15 @@ export default {
     console.log(this.replies);
     this.loaded = true;
   },
+  mounted() {
+    this.user = firebase.auth().currentUser;
+    console.log("BUBBLES USER:", this.user);
+  },
   methods: {
+    getTime(date) {
+      console.log(moment().format("ddd MMM Do YYYY"));
+      return moment(date).fromNow();
+    },
     async getReplies() {
       await db
         .collection("replies")
@@ -166,10 +178,10 @@ export default {
 <style scoped>
 .bubble-wrap {
   position: relative;
-  z-index: 50;
+  z-index: 10;
   color: white;
   padding: 50px;
-  padding-top: 100px;
+  margin-top: 100px;
 }
 
 .bubble-bg {
@@ -214,7 +226,7 @@ ul {
   margin: 0;
 }
 
-.meta {
+.meta-info {
   font-size: 0.9em;
   font-style: italic;
   font-family: "neuton", serif;
@@ -232,5 +244,11 @@ ul {
 .delete:hover {
   color: white;
   scale: 1.3;
+}
+
+.v-textarea {
+  margin-bottom: 1.5em;
+  font-size: 1.3em;
+  line-height: 1.5em;
 }
 </style>

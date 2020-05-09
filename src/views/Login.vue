@@ -26,7 +26,7 @@
       </v-text-field>
 
       <v-btn text color="secondary" depressed>Cancel</v-btn>
-      <v-btn :disabled="!valid" color="main" type="submit" depressed>
+      <v-btn :disabled="!valid" color="main" type="submit" dark depressed>
         Login
       </v-btn>
     </v-form>
