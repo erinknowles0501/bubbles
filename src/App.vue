@@ -10,7 +10,7 @@
         x-large
         color="main"
         dark
-        @click="$router.push({ name: 'home' })"
+        :to="{ name: 'home' }"
         >Bubbles</v-btn
       >
       <div class="actions">

@@ -1,40 +1,35 @@
 <template>
   <v-container>
-    <v-card>
-      <v-form v-model="valid" @submit.prevent="login">
-        <v-card-title><h3>Login</h3></v-card-title>
-        <v-card-text>
-          <v-row v-if="submitError">
-            <v-alert text type="error" width="100%">
-              <h4>Could not log in!</h4>
-              {{ submitError }}
-            </v-alert>
-          </v-row>
-          <v-row>
-            <v-text-field
-              :rules="rules.emailUsernameRules"
-              label="email or username"
-              v-model="emailUsername"
-            ></v-text-field>
-          </v-row>
-          <v-row>
-            <v-text-field
-              type="password"
-              :rules="rules.passwordRules"
-              label="password"
-              v-model="password"
-            >
-            </v-text-field>
-          </v-row>
-        </v-card-text>
-        <v-card-actions>
-          <v-btn text color="red">Cancel</v-btn>
-          <v-btn :disabled="!valid" color="secondary" type="submit">
-            Login
-          </v-btn>
-        </v-card-actions>
-      </v-form>
-    </v-card>
+    <h2>Login</h2>
+    <v-form v-model="valid" @submit.prevent="login">
+      <v-alert text type="error" width="100%" v-if="submitError">
+        <h4>Could not log in!</h4>
+        {{ submitError }}
+      </v-alert>
+
+      <v-text-field
+        :rules="rules.emailUsernameRules"
+        label="email or username"
+        v-model="emailUsername"
+        color="secondary"
+        filled
+      ></v-text-field>
+
+      <v-text-field
+        type="password"
+        :rules="rules.passwordRules"
+        label="password"
+        v-model="password"
+        color="secondary"
+        filled
+      >
+      </v-text-field>
+
+      <v-btn text color="secondary" depressed>Cancel</v-btn>
+      <v-btn :disabled="!valid" color="main" type="submit" depressed>
+        Login
+      </v-btn>
+    </v-form>
   </v-container>
 </template>
 
@@ -63,7 +58,7 @@ export default {
     };
   },
   methods: {
-    login() {
+    async login() {
       if (this.emailUsername && this.password) {
         // determine whether entered info is an email address or a username with ~.~.~regex~.~.~
         // rules.emailUsernameRules determines validity of one or other so we don't have to check validity here
@@ -75,27 +70,42 @@ export default {
             .auth()
             .signInWithEmailAndPassword(this.emailUsername, this.password)
             .then(cred => {
-              this.$router.push({ name: "Home" });
+              this.$router.push({ name: "home" });
             })
             .catch(error => {
               console.log("error signing in with email: ", error);
               this.submitError = error;
             });
         } else {
-          db.collection("users")
+          let userEmail = null;
+          await db
+            .collection("users")
             .where("username", "==", this.emailUsername)
             .get()
             .then(snapshot => {
-              snapshot.forEach(doc => {
-                firebase
-                  .auth()
-                  .signInWithEmailAndPassword(doc.data().email, this.password);
-              });
-              this.$router.push({ name: "Home" });
+              snapshot.forEach(doc => (userEmail = doc.data().email));
             })
-            .catch(error =>
-              console.log("Error signing in with username! ", error)
-            );
+            .catch(error => {
+              console.log("Error connecting to db ", error);
+              this.submitError = error;
+            });
+
+          if (userEmail !== null) {
+            firebase
+              .auth()
+              .signInWithEmailAndPassword(userEmail, this.password)
+              .then(cred => {
+                this.$router.push({ name: "home" });
+              })
+              .catch(error => {
+                this.submitError = error;
+                console.log("error signing in: ", error);
+              });
+          } else {
+            console.log("nadaa");
+            this.submitError =
+              "Likely incorrect credentials. You can try using your email instead.";
+          }
         }
       }
     }
@@ -104,16 +114,22 @@ export default {
 </script>
 
 <style scoped>
+h2 {
+  margin-bottom: 2em;
+}
+
 .container {
-  width: 60%;
-  min-width: 300px;
+  margin-top: 120px !important;
+  color: navy !important;
+  font-weight: 600;
+  font-size: 20px;
 }
-.v-card {
-  padding: 2rem;
+
+.v-input {
+  margin-bottom: 1em;
+  margin-top: 0.5em;
 }
-.v-card__title {
-  padding-left: 0;
-}
+
 .row {
   margin-bottom: 1rem;
 }

@@ -34,7 +34,6 @@ export default {
   computed: {
     em() {
       if (this.loaded && this.radius !== 100) {
-        console.log("this replies number: ", this.replies.length);
         return (this.replies.length * 0.25 + 1) * 6;
         // okay we want em to get larger with each reply, but get larger slower.
         // replies | expected value
@@ -52,7 +51,6 @@ export default {
       if (this.loaded && this.replies.length > 0) {
         return this.replies.length * 40 + 100;
       } else {
-        console.log("no replies");
         return 100;
       }
     }
@@ -70,7 +68,6 @@ export default {
         });
       })
       .catch(error => console.log("Error!", error));
-    console.log("bubble returned replies: ", this.replies);
     // await db
     //   .collection("replies")
     //   .where("parentUid", "==", this.bubble.id)

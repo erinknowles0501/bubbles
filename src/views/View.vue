@@ -8,7 +8,13 @@
       <ul v-if="replies">
         <li class="reply-wrap" v-for="reply in replies" :key="reply.id">
           <div class="meta">
-            {{ reply.userData.username }}, posted blah
+            <router-link
+              :to="{
+                name: 'user',
+                params: { username: reply.userData.username }
+              }"
+              >{{ reply.userData.username }}</router-link
+            >, posted blah
             <v-btn
               icon
               class="delete"

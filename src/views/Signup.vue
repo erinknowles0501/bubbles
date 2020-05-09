@@ -22,7 +22,7 @@
         type="email"
         label="email"
         color="secondary"
-        hint="this is required for verification and moderation purposes, but it will not be shared."
+        hint="a valid email address is required for verification and moderation purposes, but it will not be shared."
         :rules="rules.email"
       >
       </v-text-field>
@@ -118,33 +118,35 @@ export default {
       }
     },
     async checkExists(v) {
-      // remove errors+successes so can start fresh
-      this.errors = "";
-      this.successes = "";
+      if (this.username !== "") {
+        // remove errors+successes so can start fresh
+        this.errors = "";
+        this.successes = "";
 
-      this.$refs.usernameField.loading = true;
-      console.log(this.username);
-      await db
-        .collection("users")
-        .where("username", "==", this.username)
-        .get()
-        .then(snapshot => {
-          let exists = false;
-          snapshot.forEach(doc => {
-            if (doc.exists) {
-              console.log("exists!");
-              exists = true;
+        this.$refs.usernameField.loading = true;
+        console.log(this.username);
+        await db
+          .collection("users")
+          .where("username", "==", this.username)
+          .get()
+          .then(snapshot => {
+            let exists = false;
+            snapshot.forEach(doc => {
+              if (doc.exists) {
+                console.log("exists!");
+                exists = true;
+              }
+            });
+            if (exists) {
+              this.errors =
+                "This username is already taken. Try adding dashes or different capitalization";
+            } else {
+              this.successes = "This username is available!";
+              console.log("doesn't exist!");
             }
           });
-          if (exists) {
-            this.errors =
-              "This username is already taken. Try adding dashes or different capitalization";
-          } else {
-            this.successes = "This username is available!";
-            console.log("doesn't exist!");
-          }
-        });
-      this.$refs.usernameField.loading = false;
+        this.$refs.usernameField.loading = false;
+      }
     }
   }
 };
