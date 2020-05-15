@@ -21,11 +21,7 @@
           >Login</v-btn
         >
 
-        <v-btn v-if="user" text depressed color="main" @click="logout"
-          >Logout</v-btn
-        >
-
-        <v-btn
+        <!-- <v-btn
           v-if="user"
           dark
           x-large
@@ -36,7 +32,9 @@
           :to="{ name: 'user', params: { username: user.username } }"
         >
           <v-icon>mdi-account-circle</v-icon>
-        </v-btn>
+        </v-btn> -->
+
+        <UserButton v-if="user" :user="user"></UserButton>
 
         <v-btn
           v-if="!viewing"
@@ -122,16 +120,6 @@ export default {
         this.user = null;
       }
     });
-  },
-  methods: {
-    logout() {
-      firebase
-        .auth()
-        .signOut()
-        .then(() => {
-          this.$router.push({ name: "Login" });
-        });
-    }
   }
 };
 </script>

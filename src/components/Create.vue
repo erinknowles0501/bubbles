@@ -29,6 +29,7 @@
         dark
         auto-grow
         rows="2"
+        counter="1000"
       ></v-textarea>
 
       <v-btn type="submit">Post</v-btn>

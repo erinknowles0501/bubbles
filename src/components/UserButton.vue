@@ -1,29 +1,41 @@
 <template>
-  <v-menu bottom left offset-y class="list">
+  <v-menu bottom left offset-y class="list" transition="slide-x-transition">
     <template v-slot:activator="{ on }">
       <v-btn dark x-large icon v-on="on" color="main">
         <v-icon>mdi-account-circle</v-icon>
       </v-btn>
     </template>
 
-    <div class="links">
-      <router-link class="link" :to="{ name: 'myAccount' }" color="secondary">
-        My account
-      </router-link>
-    </div>
+    <UserBubble :user="user" :fabMenu="true"></UserBubble>
+
+    <!-- <div class="links">
+      <v-btn
+        text
+        :to="{ name: 'user', params: { username: username } }"
+        color="main"
+        large
+        depressed
+      >
+        {{ username }}
+      </v-btn>
+      <v-btn text depressed small color="main" @click="logout">
+        Logout
+      </v-btn>
+    </div> -->
   </v-menu>
 </template>
 
 <script>
+import firebase from "firebase";
+import UserBubble from "./UserBubble";
+
 export default {
   name: "userButton",
+  props: ["user"],
+  components: { UserBubble },
   data() {
     return {
-      items: [
-        {
-          title: "My account"
-        }
-      ]
+      //
     };
   }
 };
@@ -35,19 +47,11 @@ export default {
   box-shadow: 0 0 !important;
 }
 
-.link {
-  font-size: 1.4em;
-  padding: 1em;
-  text-decoration: none;
-  color: navy;
-  font-family: "neuton";
-  border-radius: 4px;
-  transition: all 0.2s;
-}
-
-.link:hover {
-  background: rgba(0, 0, 255, 0.2);
-}
+/* .links {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+} */
 
 .v-menu__content {
   box-shadow: 0 0 !important;
