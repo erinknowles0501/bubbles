@@ -3,6 +3,7 @@
     <h2>
       {{ $route.params.username }}
     </h2>
+    <div v-for="n in 5">{{ n }}</div>
   </v-container>
 </template>
 

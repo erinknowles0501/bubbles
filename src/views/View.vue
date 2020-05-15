@@ -8,13 +8,22 @@
       <ul v-if="replies">
         <li class="reply-wrap" v-for="reply in replies" :key="reply.id">
           <div class="meta-info">
-            <router-link
-              :to="{
-                name: 'user',
-                params: { username: reply.userData.username }
-              }"
-              >{{ reply.userData.username }}</router-link
-            >, posted {{ getTime(reply.created) }}
+            <v-hover v-slot:default="{ hover }">
+              <span>
+                <router-link
+                  :to="{
+                    name: 'user',
+                    params: { username: reply.userData.username }
+                  }"
+                >
+                  {{ reply.userData.username }}
+                </router-link>
+                <UserBubble :user="reply.userData" v-show="hover">
+                  HOVER
+                </UserBubble>
+              </span>
+            </v-hover>
+            , posted {{ getTime(reply.created) }}
             <v-btn
               icon
               class="delete"
@@ -61,8 +70,11 @@ import db from "@/firebase/init";
 import firebase from "firebase";
 import moment from "moment";
 
+import UserBubble from "@/components/UserBubble";
+
 export default {
   name: "view",
+  components: { UserBubble },
   data() {
     return {
       loaded: false,
@@ -88,12 +100,11 @@ export default {
       });
 
     await this.getReplies();
-    console.log(this.replies);
+
     this.loaded = true;
   },
   mounted() {
     this.user = firebase.auth().currentUser;
-    console.log("BUBBLES USER:", this.user);
   },
   methods: {
     getTime(date) {

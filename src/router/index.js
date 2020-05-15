@@ -5,6 +5,7 @@ import View from "@/views/View";
 import Signup from "@/views/Signup";
 import Login from "@/views/Login";
 import User from "@/views/User";
+//import UserBubbles from "@/views/UserBubbles";
 
 Vue.use(Router);
 
@@ -35,5 +36,10 @@ export default new Router({
       name: "user",
       component: User
     }
+    // {
+    //   path: "/user/bubbles/:uid",
+    //   name: "user-bubbles",
+    //   component: UserBubbles
+    // }
   ]
 });
