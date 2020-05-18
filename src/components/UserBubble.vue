@@ -35,6 +35,7 @@
 <script>
 import firebase from "firebase";
 import db from "@/firebase/init";
+import { getters, setCurrentUser } from "../utilities/store";
 
 export default {
   name: "userBubble",
@@ -47,7 +48,8 @@ export default {
     };
   },
   created() {
-    if (firebase.auth().currentUser.uid === this.user.userUid) {
+    console.log("user bubble user: ", this.user);
+    if (this.user.userUid === getters.currentUser().uid) {
       this.isMe = true;
     }
   },
@@ -76,7 +78,8 @@ export default {
         .auth()
         .signOut()
         .then(() => {
-          this.$router.push({ name: "Login" });
+          this.$router.push({ name: "login" });
+          setCurrentUser(null); //TODO look into why the onFirebaseAuthChange or whatever function isn't doing this for us
         });
     }
   }

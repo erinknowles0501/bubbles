@@ -82,7 +82,12 @@ import db from "@/firebase/init";
 import firebase from "firebase";
 import Create from "./components/Create";
 import UserButton from "./components/UserButton";
-import { getAllUsers, getAllReplies } from "./utilities/store";
+import {
+  getAllUsers,
+  getAllReplies,
+  getters,
+  setCurrentUser
+} from "./utilities/store";
 // import { mdiPlus } from "@mdi/js";
 
 export default {
@@ -102,36 +107,40 @@ export default {
       return this.$route.params.uid ? true : false;
     }
   },
-  created() {
-    // firebase.auth().onAuthStateChanged(function(user) {
-    //   if (user) {
-    //     console.log("user signed in!", user.uid);
+  async created() {
+    // this has to just kind of run here, TODO find out why.
+    // this sets currentUser
+    // TODO look into why this isn't updating when you change user...
+    // looks like it isn't making it to getter...why?
+    // isn't even making it to the firebase user console log just below
+    // need to make computed?
+    // okay looks like if we drop an await on the following it doesn't watch properly
+    // but if we don't make it await then it doesn't get to getters()
+    // also even without the await logging out doesn't do anything to the current user state, not in firebase or in the store.
 
-    //     console.log(this.user);
-    //   } else {
-    //     // No user is signed in.
-    //     console.log("no user signed in :(");
-    //     this.user = null;
-    //   }
-    // });
-    getAllUsers();
-    getAllReplies();
-
+    // seems to be working like this - notice I set this.user directly after setCurrentUser because of the issue
+    // we were having with async/await. I wonder how this is gonna bite me in the butt later.
+    // TODO: could probably be restrcutrued - so the onauthstatechanged just calls a store function to fill in the db stuff and set current user.
+    // we'd still run into the same problem maybe? worth a try
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
+        console.log("firebase user: ", user);
         db.collection("users")
-          .doc(user.uid)
+          .doc(user.uid) // replace this with user from callback?
           .get()
-          .then(doc => (this.user = doc.data()))
-          .catch(error =>
-            console.log("Error getting user from current user uid: ", error)
-          );
-        //	this.user = firebase.auth().currentUser;
-        console.log(user);
+          .then(doc => {
+            setCurrentUser(doc.data());
+            this.user = getters.currentUser();
+          })
+          .catch(error => console.log("Error!", error));
       } else {
-        this.user = null;
+        setCurrentUser(null);
+        this.user = getters.currentUser();
       }
     });
+
+    await getAllUsers();
+    await getAllReplies();
   }
 };
 </script>

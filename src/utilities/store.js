@@ -5,7 +5,8 @@ import cuid from "cuid";
 export const store = {
   bubbles: [],
   replies: [],
-  users: []
+  users: [],
+  currentUser: {}
 };
 
 export const getters = {
@@ -17,6 +18,10 @@ export const getters = {
   },
   users: () => {
     return store.users;
+  },
+  currentUser: () => {
+    console.log("getter currentuser: ", store.currentUser);
+    return store.currentUser;
   }
 };
 
@@ -67,19 +72,19 @@ export function getAllBubbles() {
   store.bubbles = bubbles;
 }
 
-export function getAllUsers() {
+export async function getAllUsers() {
   let users = [];
-  db.collection("users")
+  await db
+    .collection("users")
     .get()
     .then(snapshot => {
-      snapshot
-        .forEach(doc => {
-          let tempUser = doc.data();
-          tempUser.id = doc.id;
-          users.push(tempUser);
-        })
-        .catch(error => console.log("Error!", error));
-    });
+      snapshot.forEach(doc => {
+        let tempUser = doc.data();
+        tempUser.id = doc.id;
+        users.push(tempUser);
+      });
+    })
+    .catch(error => console.log("Error!", error));
   store.users = users;
 }
 
@@ -194,3 +199,8 @@ export function getBubbleReplies(uid) {
 
 // update all replies (on reply create/delete)
 // update all users (on user create/edit/delete)
+
+// update current user (in App::create() on auth change)
+export function setCurrentUser(user) {
+  store.currentUser = user;
+}
