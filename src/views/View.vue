@@ -1,9 +1,22 @@
 <template>
   <div class="bubble-wrap">
     <div class="bubble-bg"></div>
-    <v-container>
+    <v-container v-if="loaded">
       <h1>{{ bubble.question }}</h1>
       <p class="description">{{ bubble.description }}</p>
+      <p class="bubble-info">
+        <v-hover v-slot:default="{ hover }">
+          <span>
+            <router-link
+              :to="{ name: 'user', params: { username: bubble.user.username } }"
+            >
+              {{ bubble.user.username }}
+            </router-link>
+            <UserBubble :user="bubble.user" v-show="hover"> </UserBubble>
+          </span>
+        </v-hover>
+        , posted {{ getTime(bubble.created) }}
+      </p>
 
       <ul v-if="replies">
         <li class="reply-wrap" v-for="reply in replies" :key="reply.id">
@@ -18,9 +31,7 @@
                 >
                   {{ reply.userData.username }}
                 </router-link>
-                <UserBubble :user="reply.userData" v-show="hover">
-                  HOVER
-                </UserBubble>
+                <UserBubble :user="reply.userData" v-show="hover"> </UserBubble>
               </span>
             </v-hover>
             , posted {{ getTime(reply.created) }}
@@ -101,6 +112,16 @@ export default {
 
     await this.getReplies();
 
+    await db
+      .collection("users")
+      .doc(this.bubble.userUid)
+      .get()
+      .then(doc => {
+        console.log("bubble creator data: ", doc.data());
+        this.bubble.user = doc.data();
+      })
+      .catch(error => console.log("Error!", error));
+
     this.loaded = true;
   },
   mounted() {
@@ -108,7 +129,6 @@ export default {
   },
   methods: {
     getTime(date) {
-      console.log(moment().format("ddd MMM Do YYYY"));
       return moment(date).fromNow();
     },
     async getReplies() {

@@ -38,6 +38,7 @@
 </template>
 
 <script>
+import firebase from "firebase";
 import db from "@/firebase/init";
 import { getPosts } from "../utilities/store";
 
@@ -58,7 +59,7 @@ export default {
           description: this.description,
           active: true,
           created: Date.now(),
-          userUid: "abcde"
+          userUid: firebase.auth().currentUser.uid
         })
         .then(res => console.log(res))
         .catch(error => console.log("Error! ", error));

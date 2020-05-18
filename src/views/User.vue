@@ -3,13 +3,66 @@
     <h2>
       {{ $route.params.username }}
     </h2>
-    <div v-for="n in 5">{{ n }}</div>
+    <div v-if="!loading">
+      <router-link
+        :to="{ name: 'view', params: { uid: bubble.id } }"
+        v-for="bubble in bubbles"
+        :key="bubble.id"
+      >
+        <div class="bubble">
+          {{ bubble.question }}, {{ formatTime(bubble.created) }}
+        </div></router-link
+      >
+    </div>
   </v-container>
 </template>
 
 <script>
+import db from "@/firebase/init";
+import firebase from "firebase";
+import moment from "moment";
+
 export default {
-  name: "user"
+  name: "user",
+  data() {
+    return {
+      loading: true,
+      bubbles: [],
+      user: {}
+    };
+  },
+  async created() {
+    await db
+      .collection("users")
+      .where("username", "==", this.$route.params.username)
+      .get()
+      .then(snapshot => {
+        snapshot.forEach(doc => {
+          this.user = doc.data();
+        });
+      })
+      .catch(error => console.log("error!", error));
+
+    await db
+      .collection("threads")
+      .where("userUid", "==", this.user.userUid)
+      .get()
+      .then(snapshot => {
+        snapshot.forEach(doc => {
+          let tempBubble = doc.data();
+          tempBubble.id = doc.id;
+          this.bubbles.push(tempBubble);
+        });
+      })
+      .catch(error => console.log("error!", error));
+
+    this.loading = false;
+  },
+  methods: {
+    formatTime(created) {
+      return moment(created).fromNow();
+    }
+  }
 };
 </script>
 
@@ -25,8 +78,33 @@ h2 {
   font-size: 20px;
 }
 
-.v-input {
-  margin-bottom: 1em;
-  margin-top: 0.5em;
+.bubble {
+  display: flex;
+  align-items: center;
+  font-size: 1.3rem;
+  line-height: 1.3rem;
+  padding-left: 4rem;
+  position: relative;
+  margin-bottom: 4rem;
+}
+
+.bubble::before {
+  content: "";
+  height: 3rem;
+  width: 3rem;
+  background: blue;
+  border-radius: 50%;
+  position: absolute;
+  left: 0;
+  transition: all 0.2s;
+}
+
+.bubble:hover::before {
+  transform: scale(1.2);
+}
+
+a {
+  color: rgba(0, 0, 255, 0.7);
+  text-decoration: none;
 }
 </style>
