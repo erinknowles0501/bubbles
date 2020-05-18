@@ -9,7 +9,7 @@
 <script>
 import db from "@/firebase/init";
 import Bubble from "../components/Bubble";
-import { getPosts, getters } from "../utilities/store";
+import { getAllBubbles, getters } from "../utilities/store";
 
 export default {
   name: "bubbles",
@@ -35,9 +35,8 @@ export default {
   //   }
   // },
   async created() {
-    await getPosts();
+    await getAllBubbles();
     this.bubbles = getters.bubbles();
-    console.log("this bubbles!", this.bubbles);
     this.loaded = true;
   }
 };

@@ -40,7 +40,8 @@
 <script>
 import firebase from "firebase";
 import db from "@/firebase/init";
-import { getPosts } from "../utilities/store";
+// import { getPosts } from "../utilities/store";
+import { createBubble, getters } from "../utilities/store";
 
 export default {
   name: "create",
@@ -52,25 +53,14 @@ export default {
     };
   },
   methods: {
-    create() {
-      db.collection("threads")
-        .add({
-          question: this.question,
-          description: this.description,
-          active: true,
-          created: Date.now(),
-          userUid: firebase.auth().currentUser.uid
-        })
-        .then(res => {
-          console.log(res);
-          this.question = null;
-          this.description = null;
-        })
-        .catch(error => console.log("Error! ", error));
+    async create() {
+      let data = { question: this.question, description: this.description };
+      await createBubble(data);
+
+      this.question = null;
+      this.description = null;
 
       this.$emit("input", false);
-
-      getPosts();
     }
   }
 };
