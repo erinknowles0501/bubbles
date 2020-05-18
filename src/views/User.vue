@@ -10,7 +10,7 @@
         :key="bubble.id"
       >
         <div class="bubble">
-          {{ bubble.question }}, {{ formatTime(bubble.created) }}
+          {{ bubble.question }} <span>{{ formatTime(bubble.created) }}</span>
         </div></router-link
       >
     </div>
@@ -101,6 +101,11 @@ h2 {
 
 .bubble:hover::before {
   transform: scale(1.2);
+}
+
+.bubble span {
+  font-size: 0.9rem;
+  margin-left: 1rem;
 }
 
 a {

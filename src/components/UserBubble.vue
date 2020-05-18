@@ -49,7 +49,7 @@ export default {
   },
   created() {
     console.log("user bubble user: ", this.user);
-    if (this.user.userUid === getters.currentUser().uid) {
+    if (this.user.userUid === getters.currentUser().userUid) {
       this.isMe = true;
     }
   },
