@@ -30,19 +30,21 @@ export const getters = {
  *
  */
 
-export function getAllReplies() {
+export async function getAllReplies() {
   let replies = [];
-  db.collection("replies")
+  await db
+    .collection("replies")
     .get()
     .then(snapshot => {
       snapshot.forEach(doc => {
-        tempReply = doc.data();
+        let tempReply = doc.data();
         tempReply.id = doc.id;
         replies.push(tempReply);
       });
     })
     .catch(error => console.log("Error getting replies!", error));
   store.replies = replies;
+  console.log("store replies: ", store.replies);
 }
 
 // i think something about vue reactivity with arrays is breaking this
@@ -129,7 +131,58 @@ export function createBubble(data) {
 }
 
 // Create reply
+export async function createReply(data) {
+  let fullData = {
+    ...data,
+    userUid: firebase.auth().currentUser.uid,
+    created: Date.now(),
+    id: cuid()
+  };
+  await db
+    .collection("replies")
+    .doc(fullData.id)
+    .set(fullData)
+    .then(res => {
+      console.log("Create reply", res);
+      store.replies.push(fullData);
+    })
+    .catch(error => console.log("error creating comment: ", error));
+}
 // Create user
+
+//
+//
+//
+//
+
+/**
+ * READ FUNCTIONS
+ * */
+
+// get all replies of a bubble by its uid:
+export function getBubbleReplies(uid) {
+  let bubbleReplies = store.replies.filter(reply => reply.parentUid === uid);
+
+  // also need to populate the replies with the user data:
+
+  bubbleReplies.map(reply => {
+    reply.userData = store.users.find(user => user.id === reply.userUid);
+    return reply;
+  });
+
+  return bubbleReplies;
+  // getReplyUserData(reply) {
+  //   console.log("reply: ", reply.userUid);
+  //   return db
+  //     .collection("users")
+  //     .doc(reply.userUid)
+  //     .get()
+  //     .then(doc => {
+  //       console.log("user data: ", doc.data());
+  //       return doc.data();
+  //     });
+  // },
+}
 
 /**
  * UPDATE ALL FUNCTIONS

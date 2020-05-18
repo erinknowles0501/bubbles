@@ -90,6 +90,8 @@ import db from "@/firebase/init";
 import firebase from "firebase";
 import moment from "moment";
 
+import { getters, createReply, getBubbleReplies } from "../utilities/store";
+
 import UserBubble from "@/components/UserBubble";
 
 export default {
@@ -106,6 +108,9 @@ export default {
     };
   },
   async created() {
+    // TODO: make better use of the bubble data - I'm passing the route params in a couple places
+    // where I should be passing bubble.id or whatever.
+
     await db
       .collection("threads")
       .doc(this.$route.params.uid)
@@ -119,7 +124,7 @@ export default {
         this.$router.push({ name: "home" });
       });
 
-    await this.getReplies();
+    this.replies = getBubbleReplies(this.$route.params.uid);
 
     await db
       .collection("users")
@@ -140,48 +145,39 @@ export default {
     getTime(date) {
       return moment(date).fromNow();
     },
-    async getReplies() {
-      await db
-        .collection("replies")
-        .where("parentUid", "==", this.$route.params.uid)
-        .get()
-        .then(snapshot => {
-          snapshot.forEach(async doc => {
-            let tempComment = doc.data();
-            tempComment.id = doc.id;
-            tempComment.userData = await this.getReplyUserData(doc.data()); // might take less reads to just pull in .where('username', '==', ['user1', 'user2']) and then squish the data with JS
-            // push no good. need splice
-            if (!this.replies.find(reply => reply.id === doc.id)) {
-              this.replies.splice(this.replies.length + 1, 0, tempComment);
-            }
-          });
-          console.log("all replies", this.replies);
-        })
-        .catch(error => {
-          console.log("Error!", error);
-        });
-    },
-    getReplyUserData(reply) {
-      console.log("reply: ", reply.userUid);
-      return db
-        .collection("users")
-        .doc(reply.userUid)
-        .get()
-        .then(doc => {
-          console.log("user data: ", doc.data());
-          return doc.data();
-        });
-    },
-    createComment() {
-      db.collection("replies").add({
-        comment: this.comment,
-        userUid: firebase.auth().currentUser.uid,
-        created: Date.now(),
-        parentUid: this.$route.params.uid
-      });
-      this.comment = null;
+    // async getReplies() {
+    //   await db
+    //     .collection("replies")
+    //     .where("parentUid", "==", this.$route.params.uid)
+    //     .get()
+    //     .then(snapshot => {
+    //       snapshot.forEach(async doc => {
+    //         let tempComment = doc.data();
+    //         tempComment.id = doc.id;
+    //         tempComment.userData = await this.getReplyUserData(doc.data()); // might take less reads to just pull in .where('username', '==', ['user1', 'user2']) and then squish the data with JS
+    //         // push no good. need splice
+    //         if (!this.replies.find(reply => reply.id === doc.id)) {
+    //           this.replies.splice(this.replies.length + 1, 0, tempComment);
+    //         }
+    //       });
+    //       console.log("all replies", this.replies);
+    //     })
+    //     .catch(error => {
+    //       console.log("Error!", error);
+    //     });
+    // },
 
-      this.getReplies();
+    async createComment() {
+      // TODO: rename to createReply()
+      let data = {
+        comment: this.comment,
+        parentUid: this.$route.params.uid
+      };
+
+      await createReply(data);
+
+      this.comment = null;
+      this.replies = getBubbleReplies(this.$route.params.uid);
     },
     canDelete(userUid) {
       if (firebase.auth().currentUser) {

@@ -82,6 +82,7 @@ import db from "@/firebase/init";
 import firebase from "firebase";
 import Create from "./components/Create";
 import UserButton from "./components/UserButton";
+import { getAllUsers, getAllReplies } from "./utilities/store";
 // import { mdiPlus } from "@mdi/js";
 
 export default {
@@ -113,6 +114,9 @@ export default {
     //     this.user = null;
     //   }
     // });
+    getAllUsers();
+    getAllReplies();
+
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
         db.collection("users")
