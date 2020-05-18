@@ -19,7 +19,7 @@
         dark
         rows="1"
         @keydown.enter.prevent
-        counter="36"
+        counter="75"
       ></v-textarea>
 
       <v-textarea
@@ -61,7 +61,11 @@ export default {
           created: Date.now(),
           userUid: firebase.auth().currentUser.uid
         })
-        .then(res => console.log(res))
+        .then(res => {
+          console.log(res);
+          this.question = null;
+          this.description = null;
+        })
         .catch(error => console.log("Error! ", error));
 
       this.$emit("input", false);

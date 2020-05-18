@@ -14,12 +14,18 @@
         >Bubbles</v-btn
       >
       <div class="actions">
-        <v-btn v-if="!user" text depressed color="main" :to="{ name: 'signup' }"
-          >Signup</v-btn
+        <v-btn
+          v-if="!user"
+          text
+          depressed
+          color="main"
+          :to="{ name: 'signup' }"
         >
-        <v-btn v-if="!user" text depressed color="main" :to="{ name: 'login' }"
-          >Login</v-btn
-        >
+          Signup
+        </v-btn>
+        <v-btn v-if="!user" text depressed color="main" :to="{ name: 'login' }">
+          Login
+        </v-btn>
 
         <!-- <v-btn
           v-if="user"
@@ -37,7 +43,7 @@
         <UserButton v-if="user" :user="user"></UserButton>
 
         <v-btn
-          v-if="!viewing"
+          v-if="!viewing && user"
           class="add"
           fab
           :color="create ? 'white' : 'main'"
@@ -47,8 +53,9 @@
           icon
           @click="create = !create"
           :style="create && 'transform: rotate(45deg)'"
-          ><v-icon>mdi-plus</v-icon></v-btn
         >
+          <v-icon>mdi-plus</v-icon>
+        </v-btn>
         <v-btn
           v-if="viewing"
           @click="$router.push({ name: 'home' })"
@@ -58,11 +65,12 @@
           dark
           x-large
           icon
-          ><v-icon>mdi-arrow-left</v-icon></v-btn
         >
+          <v-icon>mdi-arrow-left</v-icon>
+        </v-btn>
       </div>
 
-      <Create v-model="create" />
+      <Create v-if="user" v-model="create" />
 
       <router-view />
     </v-content>

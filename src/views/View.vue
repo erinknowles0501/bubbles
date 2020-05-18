@@ -15,7 +15,7 @@
             <UserBubble :user="bubble.user" v-show="hover"> </UserBubble>
           </span>
         </v-hover>
-        , posted {{ getTime(bubble.created) }}
+        posted {{ getTime(bubble.created) }}
       </p>
 
       <ul v-if="replies">
@@ -34,7 +34,7 @@
                 <UserBubble :user="reply.userData" v-show="hover"> </UserBubble>
               </span>
             </v-hover>
-            , posted {{ getTime(reply.created) }}
+            posted {{ getTime(reply.created) }}
             <v-btn
               icon
               class="delete"
@@ -234,7 +234,9 @@ export default {
 
 h1 {
   font-family: "neuton", serif;
-  font-size: 4em;
+  font-size: 4rem;
+  line-height: 1.2;
+  margin-bottom: 2rem;
 }
 
 .description {
