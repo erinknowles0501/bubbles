@@ -2,8 +2,6 @@
   <div class="bubble-wrap">
     <div class="bubble-bg"></div>
     <v-container v-if="loaded">
-      <h1>{{ bubble.question }}</h1>
-      <p class="description">{{ bubble.description }}</p>
       <p class="bubble-info">
         <v-hover v-slot:default="{ hover }">
           <span>
@@ -16,7 +14,18 @@
           </span>
         </v-hover>
         posted {{ getTime(bubble.created) }}
+        <v-btn
+          icon
+          class="delete"
+          v-if="canDelete(bubble.userUid)"
+          @click="deleteBubble(bubble.id)"
+        >
+          <v-icon color="rgba(255,255,255,0.5)">mdi-delete</v-icon>
+        </v-btn>
       </p>
+
+      <h1>{{ bubble.question }}</h1>
+      <p class="description">{{ bubble.description }}</p>
 
       <ul v-if="replies">
         <li class="reply-wrap" v-for="reply in replies" :key="reply.id">
@@ -193,6 +202,17 @@ export default {
           );
         })
         .catch(error => console.log("Error!", error));
+    },
+    deleteBubble(bubbleUid) {
+      db.collection("threads")
+        .doc(bubbleUid)
+        .delete()
+        .then(() => {
+          console.log("Document successfully deleted");
+          // TODO: Also delete its replies!
+          this.$router.push({ name: "home" });
+        })
+        .catch(error => console.log("Error!", error));
     }
   },
   watch: {
@@ -230,6 +250,13 @@ export default {
   min-width: 300px;
   width: 60%;
   margin: 0 auto;
+}
+
+.bubble-info {
+  border-bottom: 1px solid white;
+  margin-bottom: 2rem;
+  padding: 1rem 0;
+  position: relative;
 }
 
 h1 {
